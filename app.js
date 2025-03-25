@@ -1,4 +1,4 @@
-const Chat = require("../../models/farmers/chatmodel");
+const Chat = require("./");
 const { createClient } = require("redis");
 
 const redisClient = createClient();
@@ -40,10 +40,8 @@ const sendMessage = async (
   }
 };
 
-const getMessagesBetweenUsers = async (req, res) => {
+const getMessagesBetweenUsers = async (sender, receiver) => {
   try {
-    const { sender, receiver } = req.params;
-
     const messages = await Chat.find({
       $or: [
         { sender, receiver },
@@ -51,9 +49,9 @@ const getMessagesBetweenUsers = async (req, res) => {
       ],
     }).sort({ timestamp: 1 });
 
-    res.json(messages);
+    return messages;
   } catch (error) {
-    res.status(500).json({ error: "Error retrieving messages" });
+    throw new Error("Error retrieving messages: " + error.message);
   }
 };
 
