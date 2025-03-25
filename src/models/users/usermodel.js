@@ -10,12 +10,20 @@ const UserSchema = new mongoose.Schema({
   cart: [
     {
       product: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
-      quantity: { type: Number, required: true }
-    }
+      quantity: { type: Number, required: true },
+    },
   ],
   orders: [{ type: mongoose.Schema.Types.ObjectId, ref: "Order" }],
   createdAt: { type: Date, default: Date.now },
 });
 
-module.exports = mongoose.model("User", UserSchema);
+const OtpSchema = new mongoose.Schema({
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  otp: { type: String, required: true },
+  expiresAt: { type: Date, required: true },
+});
 
+const User = mongoose.model("User", UserSchema);
+const Otp = mongoose.model("Otp", OtpSchema);
+
+module.exports = { User, Otp };
