@@ -1,8 +1,14 @@
 const Farmer = require("../../models/farmers/farmermodel");
+const bcrypt = require("bcryptjs");
 
 const registerFarmer = async (data) => {
   try {
-    const farmer = new Farmer(data);
+    const { email, password } = data;
+    const existingFarmer = await Farmer.findOne({ email });
+    if (existingFarmer) throw new Error("User already exists");
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const farmer = new Farmer({ ...data, password: hashedPassword });
     await farmer.save();
     return farmer;
   } catch (error) {

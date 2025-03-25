@@ -18,7 +18,12 @@ const UserSchema = new mongoose.Schema({
 });
 
 const OtpSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    refPath: "userType",
+  },
+  userType: { type: String, required: true, enum: ["User", "Farmer"] }, // Determines the referenced model
   otp: { type: String, required: true },
   expiresAt: { type: Date, required: true },
 });

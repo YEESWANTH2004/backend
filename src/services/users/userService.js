@@ -1,4 +1,5 @@
 const { User, Otp } = require("../../models/users/usermodel");
+const Farmer = require("../../models/farmers/farmermodel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const sendOtp = require("../../utils/sendOtp");
@@ -34,11 +35,16 @@ const registerUser = async (data) => {
 
 const loginUser = async (data) => {
   try {
-    const { email, password } = data;
+    const { email, password, userType } = data;
 
     // Find user
-    const user = await User.findOne({ email });
-    if (!user) throw new Error("Invalid email or password");
+    let user;
+    if (userType == "User") {
+      user = await User.findOne({ email });
+    } else {
+      user = await Farmer.findOne({ email });
+    }
+    if (!user) throw new Error("Invalid email or password or type");
 
     // Compare passwords
     const isMatch = await bcrypt.compare(password, user.password);
