@@ -3,7 +3,7 @@ const UserService = require("../../services/users/userService");
 const registerUser = async (req, res) => {
   try {
     const user = await UserService.registerUser(req.body);
-    res.status(201).json({ success: true, user });
+    res.status(200).json({ success: true, user });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -77,5 +77,4 @@ module.exports = {
   updateUserProfile,
   addToCart,
   removeFromCart,
-  validateOtp,
 };
