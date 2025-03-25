@@ -3,7 +3,8 @@ const router = express.Router();
 const negotiationController = require("../../controllers/farmers/negotiationController");
 
 // Create a new negotiation
-router.post("/", negotiationController.createNegotiation);
+// router.post("/", negotiationController.createNegotiation);
+router.post("/", negotiationController.startNegotiation);
 
 // Get a negotiation by ID
 router.get("/:id", negotiationController.getNegotiation);

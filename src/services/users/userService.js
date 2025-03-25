@@ -1,11 +1,12 @@
-const User = require("../../routes/users/userRoutes");
+const User = require("../../models/users/usermodel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const registerUser = async (data) => {
   try {
     const { name, email, phone, password, address } = data;
-    
+
+    console.log(data.email);
     // Check if user exists
     const existingUser = await User.findOne({ email });
     if (existingUser) throw new Error("User already exists");
@@ -14,7 +15,13 @@ const registerUser = async (data) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create new user
-    const newUser = new User({ name, email, phone, password: hashedPassword, address });
+    const newUser = new User({
+      name,
+      email,
+      phone,
+      password: hashedPassword,
+      address,
+    });
     await newUser.save();
 
     return newUser;
@@ -26,7 +33,7 @@ const registerUser = async (data) => {
 const loginUser = async (data) => {
   try {
     const { email, password } = data;
-    
+
     // Check if user exists
     const user = await User.findOne({ email });
     if (!user) throw new Error("Invalid email or password");
@@ -36,7 +43,9 @@ const loginUser = async (data) => {
     if (!isMatch) throw new Error("Invalid email or password");
 
     // Generate token
-    const token = jwt.sign({ id: user._id }, "your_secret_key", { expiresIn: "1d" });
+    const token = jwt.sign({ id: user._id }, "your_secret_key", {
+      expiresIn: "1d",
+    });
 
     return token;
   } catch (error) {
@@ -54,7 +63,9 @@ const getUserProfile = async (userId) => {
 
 const updateUserProfile = async (userId, data) => {
   try {
-    return await User.findByIdAndUpdate(userId, data, { new: true }).select("-password");
+    return await User.findByIdAndUpdate(userId, data, { new: true }).select(
+      "-password"
+    );
   } catch (error) {
     throw new Error("Error updating profile: " + error.message);
   }
@@ -66,7 +77,9 @@ const addToCart = async (userId, cartItem) => {
     if (!user) throw new Error("User not found");
 
     // Check if product is already in cart
-    const existingItem = user.cart.find(item => item.product.toString() === cartItem.product);
+    const existingItem = user.cart.find(
+      (item) => item.product.toString() === cartItem.product
+    );
     if (existingItem) {
       existingItem.quantity += cartItem.quantity;
     } else {
@@ -85,7 +98,9 @@ const removeFromCart = async (userId, productId) => {
     const user = await User.findById(userId);
     if (!user) throw new Error("User not found");
 
-    user.cart = user.cart.filter(item => item.product.toString() !== productId);
+    user.cart = user.cart.filter(
+      (item) => item.product.toString() !== productId
+    );
     await user.save();
 
     return user;
@@ -94,4 +109,11 @@ const removeFromCart = async (userId, productId) => {
   }
 };
 
-module.exports = { registerUser, loginUser, getUserProfile, updateUserProfile, addToCart, removeFromCart };
+module.exports = {
+  registerUser,
+  loginUser,
+  getUserProfile,
+  updateUserProfile,
+  addToCart,
+  removeFromCart,
+};
